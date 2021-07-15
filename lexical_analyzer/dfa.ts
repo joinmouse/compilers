@@ -19,20 +19,14 @@ export default function main(source: string) {
 				if (isIdentifier(char) || isDigit(char)) {
 					token.value += char;
 				} else {
-					tokens.push(token)
-					let data = initial(char);
-					state = data?.state
-					token = data?.token
+					handleState(char)
 				}
 				break;
 			case DFAState.Number:
 				if (isDigit(char)) {
 					token.value += char;
 				} else {
-					tokens.push(token)
-					let data = initial(char);
-					state = data?.state
-					token = data?.token
+					handleState(char)
 				}
 				break;
 			case DFAState.GT:
@@ -41,21 +35,22 @@ export default function main(source: string) {
 					token.type = TokenType.GE;
 					state = DFAState.GE;
 				} else {
-					tokens.push(token)
-					let data = initial(char);
-					state = data?.state
-					token = data?.token
+					handleState(char)
 				}
 				break;
 			// 其余没有匹配自动机的字符，直接开始下一个初始化字符。
 			default:
-				if(state) tokens.push(token)
-				let data = initial(char);
-				state = data?.state
-				token = data?.token
+				handleState(char)
 		}
   	}
 	tokens.push(token)
+
+	function handleState(char: string) {
+		if(state) tokens.push(token)
+		let data = initial(char);
+		state = data?.state
+		token = data?.token
+	}
 
   	return tokens
 }
